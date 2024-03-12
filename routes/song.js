@@ -35,7 +35,7 @@ router.get("/get/mysongs",
         const currentUser = req.user;
 
         //we need to get all songs where artist id == currentUser._id
-        const songs = await Song.find({ artist: req.user._id });
+        const songs = await Song.find({ artist: req.user._id }).populate("artist");
         return res.status(200).json({ data: songs });
     }
 );
@@ -67,7 +67,7 @@ router.get(
     async (req, res) => {
         const { songName } = req.params;
 
-        const songs = await Song.find({ name: songName });
+        const songs = await Song.find({ name: songName }).populate("artist");
         return res.status(200).json({ data: songs });
     }
 );
