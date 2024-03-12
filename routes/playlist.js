@@ -37,18 +37,39 @@ router.post(
 //if we use : before the request name in path as below
 // so there can be anything! it will not check for exact match for last path;
 
-router.get("/get/playlist/:playlistId",
+router.get(
+    "/get/playlist/:playlistId",
     passport.authenticate("jwt", { session: false }),
     async (req, res) => {
         const playlistId = req.params.playlistId;
         //I need to find a playlist with _id ==playlistId
 
-        const playlist = await Playlist.findOne({ _id: playlistId });
+        const playlist = await Playlist.findOne({ _id: playlistId }).populate({
+            path: "songs",
+            populate: {
+                path: "artist",
+            },
+        });
         if (!playlist) {
             return res.status(301).json({ err: "Invalid ID" });
         }
 
         return res.status(200).json(playlist);
+    }
+);
+
+
+//Get all playlists made by me ******
+// /get/me
+
+router.get(
+    "/get/me",
+    passport.authenticate("jwt", { session: false }),
+    async (req, res) => {
+        const artistId = req.user._id;
+
+        const playlists = await Playlist.find({ owner: artistId }).populate("owner");
+        return res.status(200).json({ data: playlists });
     }
 );
 
