@@ -72,4 +72,24 @@ router.get(
     }
 );
 
+
+
+
+
+//Get All Songs for Home page..................
+
+router.get(
+    "/get/allsongs",
+    passport.authenticate("jwt", { session: false }),
+    async (req, res) => {
+        try {
+            const songs = await Song.find().populate("artist");
+            return res.status(200).json({ data: songs });
+        } catch (error) {
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+);
+
+
 module.exports = router;
